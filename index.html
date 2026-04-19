@@ -1,28 +1,163 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
-
-    <title>Documento</title>
+    <title>Sistema de Registro - UNEFA Núcleo Yaracuy</title>
+    <!-- Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-        <div class="card">  
-        <img class="img_portada" src="https://i.pinimg.com/736x/e7/8d/38/e78d3897ce3985621f7141e66a07680b.jpg">
-        <h1 class="card_titulo">Emmanuel Azuaje</h1>
-        <h2 class="card_subtitulo"> Programacion Web </h2>
-        
-        <p class="card_contenido">
-        Lore master un dos por tres pero da igual esto esto es para
-        un ejercicio de prueba como tal y son mas remedio
-        se procede a explicar que esto tiene la funcion de rellenar
-        texto pero bueno esto nadie lo va a leer y si lo estas leyendo
-        la verdad que tiene tiempo libre o te has puesto revisar mis pruebas cortas
-        de html y css
-        </p>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <i class="fa-solid fa-graduation-cap"></i>
+            </div>
+            <div class="titles">
+                <h1>Ingeniería de Sistemas</h1>
+                <p class="subtitle">Excelencia Educativa - Núcleo Yaracuy</p>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Dashboard Stats -->
+        <section class="dashboard">
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fa-solid fa-money-bill-wave"></i></div>
+                <div class="stat-info">
+                    <h3>Total Ingresos (Bs)</h3>
+                    <p id="total-ingresos">0.00</p>
+                </div>
+            </div>
+            <div class="stat-card stat-dolar">
+                <div class="stat-icon"><i class="fa-solid fa-dollar-sign"></i></div>
+                <div class="stat-info">
+                    <h3>Total Ingresos (USD)</h3>
+                    <p id="total-ingresos-usd">...</p>
+                    <small id="tasa-dolar-info" style="font-size: 0.75rem; color: var(--text-muted);">Tasa BCV...</small>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fa-solid fa-users"></i></div>
+                <div class="stat-info">
+                    <h3>Registros</h3>
+                    <p id="total-registros">0</p>
+                </div>
+            </div>
+            <div class="stat-card stat-semestres">
+                <div class="stat-info" style="width: 100%;">
+                    <h3>Por Semestres</h3>
+                    <ul id="lista-semestres-stats" class="stat-list">
+                        <!-- JS llenará esto -->
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tabs Navigation -->
+        <div class="tabs-nav">
+            <button class="tab-btn active" data-tab="tab-registros"><i class="fa-solid fa-list-check"></i> Registros</button>
+            <button class="tab-btn" data-tab="tab-graficas"><i class="fa-solid fa-chart-bar"></i> Gráficos</button>
         </div>
 
+        <div id="tab-registros" class="tab-pane">
+            <div class="content-grid">
+            <!-- Form -->
+            <section class="form-section">
+                <div class="card">
+                    <h2 id="form-title">Nuevo Registro</h2>
+                    <form id="registro-form">
+                        <input type="hidden" id="registro-id" />
+                        <div class="form-group">
+                            <label for="nombre">Nombre del Estudiante</label>
+                            <input type="text" id="nombre" required placeholder="Ej. Juan Pérez">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="semestre">Semestre</label>
+                            <select id="semestre" required>
+                                <option value="" disabled selected>Seleccione el semestre...</option>
+                                <!-- JS llenará esto -->
+                            </select>
+                        </div>
 
+                        <div class="form-group">
+                            <label for="tipo-pago">Método de Pago</label>
+                            <select id="tipo-pago" required>
+                                <option value="Efectivo">Efectivo</option>
+                                <option value="Pago Móvil">Pago Móvil</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group" id="referencia-group" style="display: none;">
+                            <label for="referencia">Referencia de Pago</label>
+                            <input type="text" id="referencia" placeholder="Últimos 4 o 6 dígitos">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="monto">Monto (Bs.)</label>
+                            <input type="number" step="0.01" id="monto" required placeholder="0.00">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="fecha">Fecha</label>
+                            <input type="date" id="fecha" required>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn-primary" id="btn-submit">Guardar Registro</button>
+                            <button type="button" class="btn-secondary" id="btn-cancel" style="display: none;">Cancelar</button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <!-- Table -->
+            <section class="table-section">
+                <div class="card table-card">
+                    <h2>Registros Recientes</h2>
+                    <div class="table-responsive">
+                        <table id="registros-table">
+                            <thead>
+                                <tr>
+                                    <th class="sortable" data-sort="fecha">Fecha <i class="fa-solid fa-sort"></i></th>
+                                    <th class="sortable" data-sort="nombre">Nombre <i class="fa-solid fa-sort"></i></th>
+                                    <th class="sortable" data-sort="semestre">Semestre <i class="fa-solid fa-sort"></i></th>
+                                    <th class="sortable" data-sort="tipoPago">Método <i class="fa-solid fa-sort"></i></th>
+                                    <th>Ref.</th>
+                                    <th class="sortable" data-sort="monto">Monto <i class="fa-solid fa-sort"></i></th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="registros-body">
+                                <!-- Filas de registros irán aquí -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </div> <!-- Fin content grid -->
+        </div> <!-- Fin tab registros -->
+
+        <!-- Tab 2: Gráficas -->
+        <div id="tab-graficas" class="tab-pane" style="display: none;">
+            <div class="card">
+                <h2>Rendimiento de Matrícula por Semestre</h2>
+                <div class="chart-container" style="position: relative; height:50vh; width:100%; margin-top:2rem;">
+                    <canvas id="semestresChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script src="js/modelo.js"></script>
+    <script src="js/vista.js"></script>
+    <script src="js/controlador.js"></script>
 </body>
 </html>
